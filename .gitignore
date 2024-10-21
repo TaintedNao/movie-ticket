@@ -1,0 +1,3 @@
+sqlite/database.db
+sqlite/__pycache__/*
+sqlite/queries/__pycache__/*
