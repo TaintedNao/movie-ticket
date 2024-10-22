@@ -1,1 +1,7 @@
 to run the api: flask --app sqlite/run_api.py run
+
+Push changes from branch to main:
+git checkout main
+git pull                # to update the state to the latest remote master state
+git merge {branch}      # to bring changes to local master from your develop branch
+git push origin main    # push current HEAD to remote master branch
