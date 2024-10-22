@@ -1,9 +1,8 @@
 import sqlite3 as sq
 import sys
 import os
+from variables import *
 
-DB_FILE = "database.db"
-SCHEMA_FILE = "schema.sql"
 
 print(sys.argv)
 
