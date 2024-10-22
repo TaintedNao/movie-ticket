@@ -1,10 +1,12 @@
-CREATE TABLE customer
+CREATE TABLE user
 (
-    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    firt_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password_salt TEXT,
+    password_hash TEXT,
+    firt_name TEXT,
+    last_name TEXT,
+    is_admin INT NOT NULL
 );
 
 CREATE TABLE payment
