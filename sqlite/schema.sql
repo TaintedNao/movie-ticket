@@ -1,38 +1,53 @@
-CREATE TABLE customer
-(
-    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    firt_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL
+-- Table: Movie
+CREATE TABLE Movie (
+    Movie_ID INTEGER PRIMARY KEY,
+    Showtime DATETIME,
+    Description VARCHAR,
+    Theatre INTEGER,
+    Rating VARCHAR,
+    Remaining_Seats INTEGER,
+    FOREIGN KEY (Theatre) REFERENCES Theatre(Theatre_num)
 );
 
-CREATE TABLE payment
-(
-    payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    payment_type TEXT NOT NULL,
-    payment_total SMALLMONEY NOT NULL
+-- Table: Theatre
+CREATE TABLE Theatre (
+    Theatre_num INTEGER PRIMARY KEY,
+    Capacity INTEGER
 );
 
-CREATE TABLE ticket
-(
-    ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    price SMALLMONEY NOT NULL,
-    seat CHAR(2),
-    FOREIGN KEY(movie_id) REFERENCES movie(movie_id),
-    FOREIGN KEY(customer_id) REFERENCES customer(customer_id)
+-- Table: Ticket
+CREATE TABLE Ticket (
+    Ticket_ID INTEGER PRIMARY KEY,
+    Movie_ID INTEGER,
+    Price INTEGER,
+    Seat INTEGER,
+    Payment_ID INTEGER,
+    FOREIGN KEY (Movie_ID) REFERENCES Movie(Movie_ID),
+    FOREIGN KEY (Payment_ID) REFERENCES Payment(Payment_ID)
 );
 
-CREATE TABLE movie
-(
-    movie_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    showtime TEXT NOT NULL,
-    movie_description TEXT NOT NULL,
-    room_no INTEGER NOT NULL,
-    rating TEXT NOT NULL,
-    seats_remaining INTEGER NOT NULL
-
+-- Table: Payment
+CREATE TABLE Payment (
+    Payment_ID INTEGER PRIMARY KEY,
+    Total INTEGER,
+    Method VARCHAR,
+    Email VARCHAR,
+    FOREIGN KEY (Email) REFERENCES User(Email)
 );
+
+-- Table: User
+CREATE TABLE User (
+    Email VARCHAR PRIMARY KEY,
+    Name VARCHAR,
+    Password VARCHAR,
+    Is_Admin BOOLEAN
+);
+
+-- Indexes for faster lookup on foreign keys (optional but recommended)
+CREATE INDEX idx_Movie_Theatre ON Movie(Theatre);
+CREATE INDEX idx_Ticket_Movie_ID ON Ticket(Movie_ID);
+CREATE INDEX idx_Ticket_Payment_ID ON Ticket(Payment_ID);
+CREATE INDEX idx_Payment_Email ON Payment(Email);
 
 /*
     SQLite does not have a storage class set aside for storing dates and/or times. Instead, the built-in Date And Time Functions of SQLite are capable of storing dates and times as TEXT, REAL, or INTEGER values:
