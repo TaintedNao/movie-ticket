@@ -39,7 +39,7 @@ CREATE TABLE ticket (
     ticket_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     movie_ID INTEGER,
     price INTEGER,
-    seat INTEGER,
+    seat VARCHAR(2),
     payment_ID INTEGER,
     FOREIGN KEY (movie_ID) REFERENCES movie(movie_ID),
     FOREIGN KEY (payment_ID) REFERENCES payment(payment_ID)

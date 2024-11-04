@@ -39,8 +39,13 @@ def get_password_hash(password, salt):
 
     return hasher.hexdigest()
 
-
-def is_admin(user_name, connection):
+# Description:
+#         Check to see if the user is an is_admin
+# Pre:
+#         email(string)
+# Post:
+#         Returns true or false if the user is an admin
+def is_admin(email, connection):
 
     cursor = connection.cursor()
 
@@ -50,7 +55,7 @@ def is_admin(user_name, connection):
         WHERE email = ?
     '''
 
-    cursor.execute(query, (user_name,))
+    cursor.execute(query, (email,))
     results = cursor.fetchall()
     if results == 1:
         return True
@@ -102,8 +107,7 @@ def create_new_user(email, password, first_name, last_name, connection):
 
     cursor = connection.cursor()
 
-    # Query for checking if the user is in the database
-    # This could be optimized a bit
+    # Checks to see if the email is in use
     query = '''
         SELECT email
         FROM user
@@ -146,7 +150,7 @@ def create_new_user(email, password, first_name, last_name, connection):
         # Commit to the database
         connection.commit()
 
-        return (True, "account_created")
+        return(True, "account_created")
 
 # Description: 
 #       Update the password for an existing user
