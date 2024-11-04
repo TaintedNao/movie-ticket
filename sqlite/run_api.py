@@ -1,5 +1,5 @@
 from flask import Flask
-from sqlite.blueprints.b_user import user_blueprint
+from blueprints.b_user import user_blueprint
 
 
 app = Flask(__name__)

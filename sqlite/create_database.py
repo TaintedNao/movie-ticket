@@ -12,6 +12,11 @@ def create_db():
     conn = sq.connect(DB_FILE)
     curs = conn.cursor()
 
+     # Check if schema file exists
+    if not os.path.isfile(SCHEMA_FILE):
+        print(f"Schema file {SCHEMA_FILE} not found!")
+        exit()
+
     # Open the schema file and execute the code
     with open(SCHEMA_FILE, 'r') as file:
         curs.executescript(file.read())

@@ -1,8 +1,8 @@
 from flask import request, Blueprint
 import sqlite3
 import json
-from sqlite.variables import *
-import sqlite.queries.user as us
+from variables import *
+import queries.user as us
 
 user_blueprint = Blueprint('/user/', __name__)
 
