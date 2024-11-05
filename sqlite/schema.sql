@@ -1,45 +1,53 @@
-CREATE TABLE customer
-(
-    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    firt_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL
+-- Table: User
+CREATE TABLE user (
+    email TEXT PRIMARY KEY,
+    first_name TEXT,
+    last_name TEXT,
+    password_salt TEXT,
+    password_hash TEXT,
+    is_admin INTEGER
 );
 
-CREATE TABLE payment
-(
-    payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    payment_type TEXT NOT NULL,
-    payment_total SMALLMONEY NOT NULL
+-- Table: Theatre
+CREATE TABLE theatre (
+    theatre_num INTEGER PRIMARY KEY,
+    capacity INTEGER
 );
 
-CREATE TABLE ticket
-(
-    ticket_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    price SMALLMONEY NOT NULL,
-    seat CHAR(2),
-    FOREIGN KEY(movie_id) REFERENCES movie(movie_id),
-    FOREIGN KEY(customer_id) REFERENCES customer(customer_id)
+-- Table: Payment
+CREATE TABLE payment (
+    payment_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    total INTEGER,
+    method TEXT,
+    email TEXT,
+    FOREIGN KEY (email) REFERENCES user(email)
 );
 
-CREATE TABLE movie
-(
-    movie_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    showtime TEXT NOT NULL,
-    movie_description TEXT NOT NULL,
-    room_no INTEGER NOT NULL,
-    rating TEXT NOT NULL,
-    seats_remaining INTEGER NOT NULL
-
+-- Table: Movie
+CREATE TABLE movie (
+    movie_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    showtime DATETIME,
+    description TEXT,
+    theatre INTEGER,
+    rating TEXT,
+    remaining_seats INTEGER,
+    FOREIGN KEY (theatre) REFERENCES theatre(theatre_num)
 );
 
-/*
-    SQLite does not have a storage class set aside for storing dates and/or times. Instead, the built-in Date And Time Functions of SQLite are capable of storing dates and times as TEXT, REAL, or INTEGER values:
+-- Table: Ticket
+CREATE TABLE ticket (
+    ticket_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_ID INTEGER,
+    price INTEGER,
+    seat VARCHAR(2),
+    payment_ID INTEGER,
+    FOREIGN KEY (movie_ID) REFERENCES movie(movie_ID),
+    FOREIGN KEY (payment_ID) REFERENCES payment(payment_ID)
+);
 
-        TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS").
-        REAL as Julian day numbers, the number of days since noon in Greenwich on November 24, 4714 B.C. according to the proleptic Gregorian calendar.
-        INTEGER as Unix Time, the number of seconds since 1970-01-01 00:00:00 UTC.
 
-    Applications can chose to store dates and times in any of these formats and freely convert between formats using the built-in date and time functions.
-*/
+-- Indexes for faster lookup on foreign keys (optional but recommended)
+CREATE INDEX idx_Movie_Theatre ON movie(theatre);
+CREATE INDEX idx_Ticket_Movie_ID ON ticket(movie_ID);
+CREATE INDEX idx_Ticket_Payment_ID ON ticket(payment_ID);
+CREATE INDEX idx_Payment_Email ON payment(email);
