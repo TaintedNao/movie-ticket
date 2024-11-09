@@ -1,9 +1,8 @@
 import sqlite3 as sq
 import sys
 import os
+from variables import *
 
-DB_FILE = "database.db"
-SCHEMA_FILE = "schema.sql"
 
 print(sys.argv)
 
@@ -12,6 +11,11 @@ def create_db():
     # Create connection and cursor for database file
     conn = sq.connect(DB_FILE)
     curs = conn.cursor()
+
+     # Check if schema file exists
+    if not os.path.isfile(SCHEMA_FILE):
+        print(f"Schema file {SCHEMA_FILE} not found!")
+        exit()
 
     # Open the schema file and execute the code
     with open(SCHEMA_FILE, 'r') as file:
