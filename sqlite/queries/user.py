@@ -152,6 +152,7 @@ def create_new_user(email, password, first_name, last_name, connection):
 
         return(True, "account_created")
 
+
 # Description: 
 #       Update the password for an existing user
 # Pre:

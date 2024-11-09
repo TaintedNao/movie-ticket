@@ -26,7 +26,7 @@ CREATE TABLE payment (
 -- Table: Movie
 CREATE TABLE movie (
     movie_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    showtime DATETIME,
+    showtime TEXT,
     description TEXT,
     theatre INTEGER,
     rating TEXT,
