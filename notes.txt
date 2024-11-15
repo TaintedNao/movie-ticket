@@ -1,0 +1,1 @@
+to run the api: flask --app sqlite/run_api.py run
