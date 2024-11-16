@@ -17,16 +17,15 @@ def create_ticket():
     connection = sqlite3.connect(DB_FILE)
 
     # Create a new ticket using the create_ticket func
-    result = ti.create_ticket(
-        rq['movie_id'],
-        rq['price'],
-        rq['seat'],
-        rq['payment_id'],
-        connection
-    )
-
-    # Close the connection
-    connection.close()
+    # Using a with statement because once it exits the statement the connection will automatically close
+    with sqlite3.connect(DB_FILE) as connection:
+        result = ti.create_ticket(
+            rq['movie_id'],
+            rq['price'],
+            rq['seat'],
+            rq['payment_id'],
+            connection
+        )
 
     # Handle the result
     if result[0] == True:
