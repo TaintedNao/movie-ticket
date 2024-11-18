@@ -45,7 +45,6 @@ CREATE TABLE ticket (
     FOREIGN KEY (payment_ID) REFERENCES payment(payment_ID)
 );
 
-
 -- Indexes for faster lookup on foreign keys (optional but recommended)
 CREATE INDEX idx_Movie_Theatre ON movie(theatre);
 CREATE INDEX idx_Ticket_Movie_ID ON ticket(movie_ID);
