@@ -16,10 +16,11 @@ CREATE TABLE theatre (
 
 -- Table: Payment
 CREATE TABLE payment (
-    payment_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    total INTEGER,
-    method TEXT,
-    email TEXT,
+    payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    total INTEGER NOT NULL,
+    method TEXT NOT NULL,
+    email TEXT NOT NULL,
+    status TEXT NOT NULL,
     FOREIGN KEY (email) REFERENCES user(email)
 );
 
