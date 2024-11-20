@@ -13,10 +13,12 @@ def create_movie():
     # json request
     rq = request.json
 
+    connection = sqlite3.connect(DB_FILE)
+
     # Create a new ticket using the create_ticket func
     # Using a with statement because once it exits the statement the connection will automatically close
     with sqlite3.connect(DB_FILE) as connection:
-        result = mo.create_movie(
+        result = mo.add_movie(
             rq['showtime'],
             rq['description'],
             rq['theatre'],
