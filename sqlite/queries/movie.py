@@ -65,7 +65,9 @@ def get_seats_remaining(movie_id, connection):
     # Fetch remaining seats
     seats_remaining = cursor.fetchone()
 
-    return seats_remaining[0] if seats_remaining else None
+    if seats_remaining is None:
+        return None, "movie_not_found"
+    return seats_remaining[0], "seats_retrieved"
 
 
 # Description:
@@ -76,6 +78,11 @@ def get_seats_remaining(movie_id, connection):
 # Post:
 #       Updates the remaining seats for the specified movie in the db
 def update_seats_remaining(movie_id, remaining_seats, connection):
+
+    # Make sure that remaingni_seats isn't negative
+    if remaining_seats < 0:
+        return False, "negative_seat_count"
+
 
     # Create a cursor
     cursor = connection.cursor()
@@ -104,6 +111,18 @@ def remove_movie(movie_id, connection):
 
     # Create a cursor
     cursor = connection.cursor()
+
+    # Check if the movie exists
+    query = '''
+        SELECT movie_ID 
+        FROM movie 
+        WHERE movie_ID = ?
+    '''
+    cursor.execute(query, (movie_id,))
+    result = cursor.fetchone()
+
+    if result is None:
+        return False, "movie_not_found"
 
     # Query to delete movie
     query = '''
