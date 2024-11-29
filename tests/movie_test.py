@@ -4,23 +4,26 @@ import os
 # Add the parent directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import sqlite.queries.ticket as ti
+import sqlite.queries.movie as mo
 import sqlite3
 from sqlite.variables import *
+import datetime
+
 
 
 
 def main():
 
-    movie_ID = 1
-    price = 15.99
-    seat = "A4"
-    payment_ID = 1
+    showtime = datetime.datetime.now().isoformat()
+    description = "Comedy movie"
+    theatre = 2
+    rating = "M"
+    remaining_seats = 20
 
     # Connect to the db and create a cursor
     connection = sqlite3.connect(DB_FILE)
 
-    results = ti.create_ticket(movie_ID, price, seat, payment_ID, connection)
+    results = mo.add_movie(showtime, description, theatre, rating, remaining_seats, connection)
 
     # Close the connection
     connection.close()
