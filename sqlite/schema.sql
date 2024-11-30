@@ -20,7 +20,7 @@ CREATE TABLE payment (
     total INTEGER,
     method TEXT,
     email TEXT,
-    FOREIGN KEY (email) REFERENCES user(email)
+    FOREIGN KEY (email) REFERENCES user(email) ON DELETE CASCADE
 );
 
 -- Table: Movie
@@ -41,7 +41,7 @@ CREATE TABLE ticket (
     price INTEGER,
     seat VARCHAR(2),
     payment_ID INTEGER,
-    FOREIGN KEY (movie_ID) REFERENCES movie(movie_ID),
+    FOREIGN KEY (movie_ID) REFERENCES movie(movie_ID) ON DELETE CASCADE,
     FOREIGN KEY (payment_ID) REFERENCES payment(payment_ID)
 );
 
