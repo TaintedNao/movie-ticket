@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Book Ticket</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Starlight Cinema</h1>
+    </header>
+    <main>
+        <h2>Book a Ticket for "{{ movie[2] }}"</h2>
+        <p><strong>Showtime:</strong> {{ movie[1] }}</p>
+        <p><strong>Rating:</strong> {{ movie[4] }}</p>
+        <p><strong>Ticket Price:</strong> ${{ ticket_price }}</p>
+        <form method="POST">
+            <label for="seat">Choose an available seat:</label>
+            <select name="seat" id="seat" required>
+                {% for seat in available_seats %}
+                <option value="{{ seat }}">{{ seat }}</option>
+                {% endfor %}
+            </select>
+            <p><strong>Total Price:</strong> ${{ ticket_price }}</p>
+            <button type="submit">Book Now</button>
+        </form>
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </main>
+    <footer>
+        <p>&copy; 2024 Starlight Cinema</p>
+    </footer>
+</body>
+</html>
