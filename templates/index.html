@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Theater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        main {
+            padding: 2rem;
+        }
+        .movie {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .movie-details {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Starlight Cinema</h1>
+        <p>Enjoy the latest movies and showtimes</p>
+    </header>
+    <main>
+        <h2>Now Showing</h2>
+        {% for movie in movies %}
+        <div class="movie">
+            <h3>Movie ID: {{ movie[0] }}</h3>
+            <p><strong>Description:</strong> {{ movie[1] }}</p>
+            <p><strong>Showtime:</strong> {{ movie[2] }}</p>
+            <p><strong>Rating:</strong> {{ movie[3] }}</p>
+            <p><strong>Remaining Seats:</strong> {{ movie[4] }}</p>
+            <p><strong>Theater:</strong> {{ movie[5] }}</p>
+        </div>
+        {% endfor %}
+    </main>
+</body>
+</html>
