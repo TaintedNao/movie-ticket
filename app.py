@@ -90,47 +90,71 @@ def index():
     return render_template("index.html", movies=movies)
 
 # Book Tickets
-@app.route('/book/<int:movie_id>', methods=['GET', 'POST'])
+@app.route("/book/<int:movie_id>", methods=["GET", "POST"])
 def book(movie_id):
-    if 'user_id' not in session:
-        flash('You must be logged in to book tickets.', 'error')
-        return redirect(url_for('login'))
-
-    db = get_db()
-    cursor = db.cursor()
-
-    if request.method == 'POST':
-        seat = request.form['seat']
-        price = request.form['price']
-
-        # Check if the seat is already booked
-        cursor.execute("SELECT * FROM ticket WHERE movie_ID = ? AND seat = ?", (movie_id, seat))
-        if cursor.fetchone():
-            flash('Seat already booked. Please choose a different seat.', 'error')
-            return redirect(url_for('book', movie_id=movie_id))
-
-        # Add ticket to the database
-        cursor.execute("""
-            INSERT INTO ticket (movie_ID, price, seat, payment_ID)
-            VALUES (?, ?, ?, NULL)
-        """, (movie_id, price, seat))
-
-        # Update remaining seats in the movie table
-        cursor.execute("""
-            UPDATE movie
-            SET remaining_seats = remaining_seats - 1
-            WHERE movie_ID = ?
-        """, (movie_id,))
-        db.commit()
-
-        flash('Ticket booked successfully!', 'success')
-        return redirect(url_for('index'))
-
+    if "user_id" not in session:
+        flash("You need to log in to book tickets.", "error")
+        return redirect(url_for("login"))
+    
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    
     # Fetch movie details
     cursor.execute("SELECT * FROM movie WHERE movie_ID = ?", (movie_id,))
     movie = cursor.fetchone()
+    
+    if not movie:
+        flash("Movie not found.", "error")
+        return redirect(url_for("index"))
+    
+    total_seats = movie[5]  # Total seats from the `remaining_seats` column
+    cursor.execute("""
+        SELECT seat FROM ticket WHERE movie_ID = ?
+    """, (movie_id,))
+    booked_seats = {row[0] for row in cursor.fetchall()}  # Booked seats set
 
-    return render_template("book.html", movie=movie)
+    # Fetch ticket price (use a fixed price or dynamically fetch per seat if needed)
+    ticket_price = 10  # Example fixed price for all tickets; replace with database logic if variable pricing exists
+
+    # Generate all possible seat options based on total seats
+    rows = "ABCDE"  # Adjust rows/columns based on your seating arrangement
+    seats_per_row = total_seats // len(rows)
+    seats = [f"{row}{num}" for row in rows for num in range(1, seats_per_row + 1)]
+    
+    available_seats = [seat for seat in seats if seat not in booked_seats]
+    
+    if request.method == "POST":
+        selected_seat = request.form.get("seat")
+        
+        if selected_seat not in available_seats:
+            flash("Seat is not available or invalid selection.", "error")
+        else:
+            user_email = session["user_id"]
+            
+            # Create payment entry
+            cursor.execute("""
+                INSERT INTO payment (total, method, email) VALUES (?, ?, ?)
+            """, (ticket_price, "Credit Card", user_email))
+            payment_id = cursor.lastrowid
+            
+            # Book the ticket
+            cursor.execute("""
+                INSERT INTO ticket (movie_ID, price, seat, payment_ID) VALUES (?, ?, ?, ?)
+            """, (movie_id, ticket_price, selected_seat, payment_id))
+            
+            # Update remaining seats
+            cursor.execute("""
+                UPDATE movie SET remaining_seats = remaining_seats - 1 WHERE movie_ID = ?
+            """, (movie_id,))
+            
+            conn.commit()
+            conn.close()
+            
+            flash(f"Successfully booked seat {selected_seat} for {movie[2]}.", "success")
+            return redirect(url_for("index"))
+    
+    conn.close()
+    return render_template("book.html", movie=movie, available_seats=available_seats, ticket_price=ticket_price)
 
 if __name__ == '__main__':
     app.run(debug=True)
