@@ -2,17 +2,35 @@
 <html lang="en">
 <head>
     <title>Movie Listings</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Now Showing</h1>
-    {% for movie in movies %}
-    <div>
-        <h2>{{ movie['description'] }}</h2>
-        <p><strong>Showtime:</strong> {{ movie['showtime'] }}</p>
-        <p><strong>Rating:</strong> {{ movie['rating'] }}</p>
-        <p><strong>Remaining Seats:</strong> {{ movie['remaining_seats'] }}</p>
-        <a href="{{ url_for('book', movie_id=movie['movie_ID']) }}">Book Now</a>
-    </div>
-    {% endfor %}
+    <header>
+        <h1>Generic Cinema</h1>
+        <nav>
+            {% if session.get('user_id') %}
+                <p>Welcome, {{ session['user_id'] }}!</p>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        <h2>Now Showing</h2>
+        {% for movie in movies %}
+        <div class="movie">
+            <h2>{{ movie['description'] }}</h2>
+            <p><strong>Showtime:</strong> {{ movie['showtime'] }}</p>
+            <p><strong>Rating:</strong> {{ movie['rating'] }}</p>
+            <p><strong>Remaining Seats:</strong> {{ movie['remaining_seats'] }}</p>
+            <a href="{{ url_for('book', movie_id=movie['movie_ID']) }}">Book Now</a>
+        </div>
+        {% endfor %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Generic Cinema</p>
+    </footer>
 </body>
 </html>
