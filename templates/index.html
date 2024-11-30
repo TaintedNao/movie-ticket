@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Theater Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #555;
+            padding: 0.5rem 0;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 2rem;
+        }
+        section {
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #333;
+        }
+        .movie {
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            padding: 1rem 0;
+            position: relative;
+        }
+        form input, form textarea, form button {
+            display: block;
+            width: 100%;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        form button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Starlight Cinema</h1>
+        <p>Your destination for the latest blockbusters and timeless classics!</p>
+    </header>
+    <nav>
+        <a href="#movies">Now Showing</a>
+        <a href="#showtimes">Showtimes</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+    <main>
+        <section id="movies">
+            <h2>Now Showing</h2>
+            <div class="movie">
+                <h3>Movie Title 1</h3>
+                <p>Genre: Action</p>
+            </div>
+            <div class="movie">
+                <h3>Movie Title 2</h3>
+                <p>Genre: Comedy</p>
+            </div>
+            <div class="movie">
+                <h3>Movie Title 3</h3>
+                <p>Genre: Drama</p>
+            </div>
+        </section>
+        <section id="showtimes">
+            <h2>Showtimes</h2>
+            <ul>
+                <li>Movie Title 1: 12:00 PM, 3:00 PM, 6:00 PM</li>
+                <li>Movie Title 2: 1:00 PM, 4:00 PM, 7:00 PM</li>
+                <li>Movie Title 3: 2:00 PM, 5:00 PM, 8:00 PM</li>
+            </ul>
+        </section>
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form action="https://example.com/submit-form" method="POST">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Starlight Cinema. All rights reserved.</p>
+    </footer>
+</body>
+</html>
