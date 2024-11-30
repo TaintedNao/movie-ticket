@@ -10,9 +10,6 @@ admin_blueprint = Blueprint('admin', __name__)
 @admin_blueprint.route('/admin/get_users', methods=['GET'])
 def get_users():
 
-    # json request
-    rq = request.json
-
     # Connect to the db and create a cursor
     connection = sqlite3.connect(DB_FILE)
     cursor = connection.cursor()
@@ -23,6 +20,7 @@ def get_users():
         FROM user
     '''
 
+    # Fetch users
     cursor.execute(query)
     users = cursor.fetchall()
 

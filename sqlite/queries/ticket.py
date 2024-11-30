@@ -1,4 +1,5 @@
 import sqlite3 as sq
+import sqlite.queries.movie as mo
 
 
 # Description:
@@ -15,14 +16,19 @@ def create_ticket(movie_id, price, seat, payment_id, connection):
     # Create a cursor
     cursor = connection.cursor()
 
+    # Get seats remaining to make sure there is enough seats
+    seats_remaining = mo.get_seats_remaining(movie_id, connection)
+    if seats_remaining == 0:
+        return(False, "no seats remaining!")
+
     # Make a query
     query = '''
         INSERT INTO
             ticket(
-                movie_id,
+                movie_ID,
                 price,
                 seat,
-                payment_id
+                payment_ID
             )
         VALUES (?, ?, ?, ?)
     '''
@@ -34,6 +40,11 @@ def create_ticket(movie_id, price, seat, payment_id, connection):
     )
 
     connection.commit()
+
+    # Update seats remaining
+    mo.update_seats_remaining(movie_id, seats_remaining - 1, connection)
+
+
     return(True, "ticket_created")
 
 
