@@ -19,6 +19,11 @@ def main():
     password = "password"
 
     connection = sqlite3.connect(DB_FILE)
+    
+    check = input("Delete user(y/n)? :")
+    if(check == 'y'):
+        results = us.remove_user(email, connection)
+        print(results)
 
     results = us.create_new_user(email, first_name, last_name, password, connection)
     print(results)
@@ -27,7 +32,7 @@ def main():
     if(check == 'n'):
         return
 
-    if(results[0]):
+    if(results):
         
         # Payment variables
         total = 19.99
@@ -35,20 +40,7 @@ def main():
         status = "open"
         
         # Add payment
-        # results = pa.create_payment(total, method, email, status, connection)
-        # print(results)
-        # check = input("Continue(y/n)? :")
-        # if(check == 'n'):
-        #     return
-
-        # Ticket variables
-        movie_ID = 1
-        price = 15.99
-        seat = "A5"
-        payment_ID = 13
-
-        # Add ticket
-        results = ti.create_ticket(movie_ID, price, seat, payment_ID, connection)
+        results = pa.create_payment(total, method, email, status, connection)
         print(results)
         check = input("Continue(y/n)? :")
         if(check == 'n'):
