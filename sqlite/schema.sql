@@ -45,6 +45,18 @@ CREATE TABLE ticket (
     FOREIGN KEY (payment_ID) REFERENCES payment(payment_ID)
 );
 
+CREATE TABLE seat (
+    seat_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    movie_ID INTEGER NOT NULL,
+    seat_number VARCHAR(5) NOT NULL,
+    is_available INTEGER DEFAULT 1,
+    FOREIGN KEY (movie_ID) REFERENCES movie(movie_ID) ON DELETE CASCADE
+);
+
+-- Ensure no duplicate seat entries for the same movie
+CREATE UNIQUE INDEX idx_seat_movie ON seat (movie_ID, seat_number);
+
+
 -- Indexes for faster lookup on foreign keys (optional but recommended)
 CREATE INDEX idx_Movie_Theatre ON movie(theatre);
 CREATE INDEX idx_Ticket_Movie_ID ON ticket(movie_ID);

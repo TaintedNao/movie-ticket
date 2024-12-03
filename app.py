@@ -105,53 +105,25 @@ def book(movie_id):
     
     if not movie:
         flash("Movie not found.", "error")
+        conn.close()
         return redirect(url_for("index"))
     
-    total_seats = movie[5]  # Total seats from the `remaining_seats` column
+    # Fetch available seats for the movie
     cursor.execute("""
-        SELECT seat FROM ticket WHERE movie_ID = ?
+        SELECT seat_number FROM seat WHERE movie_ID = ? AND is_available = 1
     """, (movie_id,))
-    booked_seats = {row[0] for row in cursor.fetchall()}  # Booked seats set
-
-    # Fetch ticket price (use a fixed price or dynamically fetch per seat if needed)
-    ticket_price = 10  # Example fixed price for all tickets; replace with database logic if variable pricing exists
-
-    # Generate all possible seat options based on total seats
-    rows = "ABCDE"  # Adjust rows/columns based on your seating arrangement
-    seats_per_row = total_seats // len(rows)
-    seats = [f"{row}{num}" for row in rows for num in range(1, seats_per_row + 1)]
+    available_seats = [row[0] for row in cursor.fetchall()]
     
-    available_seats = [seat for seat in seats if seat not in booked_seats]
-    
+    ticket_price = 10  # Example fixed ticket price
+
     if request.method == "POST":
         selected_seat = request.form.get("seat")
-        
+
         if selected_seat not in available_seats:
             flash("Seat is not available or invalid selection.", "error")
         else:
-            user_email = session["user_id"]
-            
-            # Create payment entry
-            cursor.execute("""
-                INSERT INTO payment (total, method, email) VALUES (?, ?, ?)
-            """, (ticket_price, "Credit Card", user_email))
-            payment_id = cursor.lastrowid
-            
-            # Book the ticket
-            cursor.execute("""
-                INSERT INTO ticket (movie_ID, price, seat, payment_ID) VALUES (?, ?, ?, ?)
-            """, (movie_id, ticket_price, selected_seat, payment_id))
-            
-            # Update remaining seats
-            cursor.execute("""
-                UPDATE movie SET remaining_seats = remaining_seats - 1 WHERE movie_ID = ?
-            """, (movie_id,))
-            
-            conn.commit()
             conn.close()
-            
-            flash(f"Successfully booked seat {selected_seat} for {movie[2]}.", "success")
-            return redirect(url_for("index"))
+            return redirect(url_for("payment", movie_id=movie_id, seat=selected_seat))
     
     conn.close()
     return render_template("book.html", movie=movie, available_seats=available_seats, ticket_price=ticket_price)
@@ -232,7 +204,6 @@ def payment(movie_id, seat):
     cursor.execute("SELECT description, showtime, rating, remaining_seats FROM movie WHERE movie_ID = ?", (movie_id,))
     movie = cursor.fetchone()
 
-    # If the movie does not exist or the seat is unavailable, redirect
     if not movie:
         flash("Movie not found.", "error")
         conn.close()
@@ -240,29 +211,42 @@ def payment(movie_id, seat):
 
     description, showtime, rating, remaining_seats = movie
 
+    # Check if the seat is still available
+    cursor.execute("""
+        SELECT is_available FROM seat WHERE movie_ID = ? AND seat_number = ?
+    """, (movie_id, seat))
+    seat_status = cursor.fetchone()
+
+    if not seat_status or seat_status[0] == 0:
+        flash("The selected seat is no longer available. Please choose a different seat.", "error")
+        conn.close()
+        return redirect(url_for("book", movie_id=movie_id))
+
     if request.method == "POST":
         payment_method = request.form.get("payment_method")
-        total_price = 10  # Mock ticket price, could be fetched from database or made dynamic
+        total_price = 10  # Mock ticket price
         user_email = session["user_id"]
 
         # Insert into the payment table
-        cursor.execute(
-            "INSERT INTO payment (total, method, email) VALUES (?, ?, ?)",
-            (total_price, payment_method, user_email)
-        )
+        cursor.execute("""
+            INSERT INTO payment (total, method, email) VALUES (?, ?, ?)
+        """, (total_price, payment_method, user_email))
         payment_id = cursor.lastrowid
 
         # Insert the ticket into the ticket table
-        cursor.execute(
-            "INSERT INTO ticket (movie_ID, price, seat, payment_ID) VALUES (?, ?, ?, ?)",
-            (movie_id, total_price, seat, payment_id)
-        )
+        cursor.execute("""
+            INSERT INTO ticket (movie_ID, price, seat, payment_ID) VALUES (?, ?, ?, ?)
+        """, (movie_id, total_price, seat, payment_id))
+
+        # Mark the seat as unavailable
+        cursor.execute("""
+            UPDATE seat SET is_available = 0 WHERE movie_ID = ? AND seat_number = ?
+        """, (movie_id, seat))
 
         # Decrement the remaining seats
-        cursor.execute(
-            "UPDATE movie SET remaining_seats = remaining_seats - 1 WHERE movie_ID = ?",
-            (movie_id,)
-        )
+        cursor.execute("""
+            UPDATE movie SET remaining_seats = remaining_seats - 1 WHERE movie_ID = ?
+        """, (movie_id,))
 
         conn.commit()
         conn.close()
