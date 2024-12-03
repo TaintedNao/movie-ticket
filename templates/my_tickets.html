@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Tickets</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>My Tickets</h1>
+    </header>
+    <main>
+        {% if tickets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Movie</th>
+                    <th>Showtime</th>
+                    <th>Seat</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket[0] }}</td>
+                    <td>{{ ticket[1] }}</td>
+                    <td>{{ ticket[2] }}</td>
+                    <td>{{ ticket[3] }}</td>
+                    <td>${{ ticket[4] }}</td>
+                    <td>
+                        <form action="{{ url_for('cancel_ticket', ticket_id=ticket[0]) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this ticket?');">
+                            <button type="submit" class="cancel-btn">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>You have no tickets booked.</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </main>
+    <footer>
+        <p>&copy; 2024 Starlight Cinema</p>
+    </footer>
+</body>
+</html>

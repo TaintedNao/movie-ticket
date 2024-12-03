@@ -13,7 +13,8 @@
         <p><strong>Showtime:</strong> {{ movie[1] }}</p>
         <p><strong>Rating:</strong> {{ movie[4] }}</p>
         <p><strong>Ticket Price:</strong> ${{ ticket_price }}</p>
-        <form method="POST">
+
+        <form id="seatSelectionForm" method="GET">
             <label for="seat">Choose an available seat:</label>
             <select name="seat" id="seat" required>
                 {% for seat in available_seats %}
@@ -21,12 +22,29 @@
                 {% endfor %}
             </select>
             <p><strong>Total Price:</strong> ${{ ticket_price }}</p>
-            <button type="submit">Book Now</button>
+            <button type="submit">Proceed to Payment</button>
         </form>
+        
+        <script>
+            // Wait until the page is loaded
+            window.onload = function() {
+                var form = document.getElementById('seatSelectionForm');
+                var seatSelect = document.getElementById('seat');
+                
+                // Set the action when the page is loaded and when a seat is selected
+                form.action = '/payment/{{ movie[0] }}/' + seatSelect.value;
+                
+                // Update the action URL whenever the seat is changed
+                seatSelect.addEventListener('change', function() {
+                    form.action = '/payment/{{ movie[0] }}/' + this.value;
+                });
+            };
+        </script>
+        
         <a href="{{ url_for('index') }}">Back to Home</a>
     </main>
     <footer>
-        <p>&copy; 2024 Starlight Cinema</p>
+        <p>&copy; 2024 Generic Cinema</p>
     </footer>
 </body>
 </html>

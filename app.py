@@ -156,5 +156,129 @@ def book(movie_id):
     conn.close()
     return render_template("book.html", movie=movie, available_seats=available_seats, ticket_price=ticket_price)
 
+@app.route("/my_tickets")
+def my_tickets():
+    if "user_id" not in session:
+        flash("You need to log in to view your tickets.", "error")
+        return redirect(url_for("login"))
+
+    user_email = session["user_id"]
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    # Fetch tickets for the logged-in user
+    cursor.execute("""
+        SELECT ticket.ticket_ID, movie.description, movie.showtime, ticket.seat, ticket.price
+        FROM ticket
+        JOIN payment ON ticket.payment_ID = payment.payment_ID
+        JOIN movie ON ticket.movie_ID = movie.movie_ID
+        WHERE payment.email = ?
+    """, (user_email,))
+    tickets = cursor.fetchall()
+
+    conn.close()
+    return render_template("my_tickets.html", tickets=tickets)
+
+@app.route("/cancel_ticket/<int:ticket_id>", methods=["POST"])
+def cancel_ticket(ticket_id):
+    if "user_id" not in session:
+        flash("You need to log in to cancel tickets.", "error")
+        return redirect(url_for("login"))
+    
+    user_email = session["user_id"]
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    # Verify the ticket belongs to the logged-in user
+    cursor.execute("""
+        SELECT ticket_ID, movie_ID
+        FROM ticket
+        JOIN payment ON ticket.payment_ID = payment.payment_ID
+        WHERE ticket_ID = ? AND payment.email = ?
+    """, (ticket_id, user_email))
+    ticket = cursor.fetchone()
+
+    if not ticket:
+        flash("Ticket not found or you are not authorized to cancel it.", "error")
+        conn.close()
+        return redirect(url_for("my_tickets"))
+    
+    ticket_id, movie_id = ticket
+
+    # Remove the ticket from the database
+    cursor.execute("DELETE FROM ticket WHERE ticket_ID = ?", (ticket_id,))
+
+    # Increment the remaining seats for the associated movie
+    cursor.execute("""
+        UPDATE movie SET remaining_seats = remaining_seats + 1 WHERE movie_ID = ?
+    """, (movie_id,))
+    
+    conn.commit()
+    conn.close()
+
+    flash(f"Ticket {ticket_id} has been successfully canceled.", "success")
+    return redirect(url_for("my_tickets"))
+
+@app.route("/payment/<int:movie_id>/<seat>", methods=["GET", "POST"])
+def payment(movie_id, seat):
+    if "user_id" not in session:
+        flash("You need to log in to book tickets.", "error")
+        return redirect(url_for("login"))
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    # Fetch movie details
+    cursor.execute("SELECT description, showtime, rating, remaining_seats FROM movie WHERE movie_ID = ?", (movie_id,))
+    movie = cursor.fetchone()
+
+    # If the movie does not exist or the seat is unavailable, redirect
+    if not movie:
+        flash("Movie not found.", "error")
+        conn.close()
+        return redirect(url_for("index"))
+
+    description, showtime, rating, remaining_seats = movie
+
+    if request.method == "POST":
+        payment_method = request.form.get("payment_method")
+        total_price = 10  # Mock ticket price, could be fetched from database or made dynamic
+        user_email = session["user_id"]
+
+        # Insert into the payment table
+        cursor.execute(
+            "INSERT INTO payment (total, method, email) VALUES (?, ?, ?)",
+            (total_price, payment_method, user_email)
+        )
+        payment_id = cursor.lastrowid
+
+        # Insert the ticket into the ticket table
+        cursor.execute(
+            "INSERT INTO ticket (movie_ID, price, seat, payment_ID) VALUES (?, ?, ?, ?)",
+            (movie_id, total_price, seat, payment_id)
+        )
+
+        # Decrement the remaining seats
+        cursor.execute(
+            "UPDATE movie SET remaining_seats = remaining_seats - 1 WHERE movie_ID = ?",
+            (movie_id,)
+        )
+
+        conn.commit()
+        conn.close()
+
+        flash("Payment successful and ticket booked!", "success")
+        return redirect(url_for("my_tickets"))
+
+    conn.close()
+    return render_template(
+        "payment.html",
+        movie_id=movie_id,
+        seat=seat,
+        description=description,
+        showtime=showtime,
+        rating=rating
+    )
+
 if __name__ == '__main__':
     app.run(debug=True)
