@@ -171,3 +171,74 @@ form select:focus {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+a {
+    display: inline-block;
+    margin: 1rem 0;
+    text-decoration: none;
+    color: #007BFF;
+}
+
+.cancel-btn {
+    background-color: #FF4C4C;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-block; /* Makes the button appear inline */
+    box-shadow: none; /* Removes box shadow if any */
+}
+
+.cancel-btn:hover {
+    background-color: #FF0000;
+}
+
+.cancel-btn:active {
+    background-color: #CC0000;
+}
+
+/* Ensure no white box or card styling around the button */
+button {
+    outline: none; /* Removes focus outline */
+}
+
+form {
+    margin: 0; /* Removes default margin on the form element */
+    padding: 0; /* Removes default padding on the form element */
+    display: inline; /* Ensures the form doesn't create a block */
+}
+
+/* If a container element exists around the form/button */
+.container {
+    background: none; /* Removes background color */
+    border: none; /* Removes border */
+    box-shadow: none; /* Removes shadow */
+    padding: 0; /* Removes padding */
+    margin: 0; /* Removes margin */
+}
