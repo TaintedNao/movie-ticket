@@ -18,7 +18,7 @@ def create_ticket(movie_id, price, seat, payment_id, connection):
 
     # Get seats remaining to make sure there is enough seats
     seats_remaining = mo.get_seats_remaining(movie_id, connection)
-    if seats_remaining == 0:
+    if seats_remaining[0] == 0:
         return(False, "no seats remaining!")
 
     # Make a query
@@ -42,7 +42,7 @@ def create_ticket(movie_id, price, seat, payment_id, connection):
     connection.commit()
 
     # Update seats remaining
-    mo.update_seats_remaining(movie_id, seats_remaining - 1, connection)
+    mo.update_seats_remaining(movie_id, (seats_remaining[0] - 1), connection)
 
 
     return(True, "ticket_created")
